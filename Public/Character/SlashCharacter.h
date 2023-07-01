@@ -51,6 +51,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void FinishEquipping();
 
+	UFUNCTION(BlueprintCallable)
+	void SetWeaponCollisionEnable(ECollisionEnabled::Type CollisionEnable);
+
 	UPROPERTY(VisibleInstanceOnly)
 	class AItem* OverlappingItem;  //与Character类重叠的Item类，用于检测是否是能被装备的武器
 

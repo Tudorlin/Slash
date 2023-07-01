@@ -5,6 +5,7 @@
 
 #include "Camera/CameraComponent.h"
 #include "GroomComponent.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Item/Weapon/Weapon.h"
@@ -190,6 +191,14 @@ void ASlashCharacter::Arm()
 void ASlashCharacter::FinishEquipping()
 {
 	ActionState = EActionState::EAS_Unoccupied;
+}
+
+void ASlashCharacter::SetWeaponCollisionEnable(ECollisionEnabled::Type CollisionEnable)
+{
+	if(EquippedWeapon&&EquippedWeapon->GetWeaponBox())
+	{
+		EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnable);
+	}
 }
 
 
