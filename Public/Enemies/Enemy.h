@@ -14,13 +14,19 @@ class SLASH_API AEnemy : public ACharacter , public IHitInterface   //继承接�
 
 public:
 	AEnemy();
+	virtual void Tick(float DeltaTime) override;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
 	virtual void BeginPlay() override;
-	virtual void GetHit() override;
+	virtual void GetHit(const FVector& HitPoint) override;;
+
+	void PlayHitReactMontage(FName SectionName);
+
+private:
+	UPROPERTY(EditDefaultsOnly,Category=Montage)
+	UAnimMontage* HitReactMontage;
 
 public:	
-	virtual void Tick(float DeltaTime) override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 };

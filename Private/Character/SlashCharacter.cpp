@@ -157,7 +157,7 @@ void ASlashCharacter::PlayAttackMontage()
 	}
 }
 
-void ASlashCharacter::PlayEquipMontage(FName SectionName)
+void ASlashCharacter::PlayEquipMontage(const FName SectionName)
 {	
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if(EquipMontage&&AnimInstance)
@@ -198,6 +198,7 @@ void ASlashCharacter::SetWeaponCollisionEnable(ECollisionEnabled::Type Collision
 	if(EquippedWeapon&&EquippedWeapon->GetWeaponBox())
 	{
 		EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnable);
+		EquippedWeapon->IgnoreActors.Empty();   //攻击完成后将忽略数组设置为空
 	}
 }
 

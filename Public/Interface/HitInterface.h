@@ -17,5 +17,5 @@ class SLASH_API IHitInterface
 	GENERATED_BODY()
 
 public:
-	virtual void GetHit() = 0;      //接口
+	virtual void GetHit(const FVector& HitPoint) = 0;      //接口
 };

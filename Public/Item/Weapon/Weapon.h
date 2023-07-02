@@ -18,6 +18,9 @@ public:
 	virtual void BeginPlay() override;
 	void AttachMeshToComponent(USceneComponent* InParent, FName InSocketName);
 	void Equip(USceneComponent* InParent,FName InSocketName);  //附加到的组件，插槽位置
+
+	TArray<AActor*>IgnoreActors;
+
 	
 protected:
 	virtual  void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;

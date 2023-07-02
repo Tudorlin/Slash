@@ -36,7 +36,7 @@ protected:
 
 //蒙太奇动画播放
 	void PlayAttackMontage();
-	void PlayEquipMontage(FName SectionName);
+	void PlayEquipMontage(const FName SectionName);
 	
 
 	UFUNCTION(BlueprintCallable)
