@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Interface/HitInterface.h"
 #include "GameFramework/Character.h"
+#include "Sound/SoundCue.h"
 #include "Enemy.generated.h"
 
 UCLASS()
@@ -19,13 +20,20 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	virtual void GetHit(const FVector& HitPoint) override;;
+	virtual void GetHit_Implementation(const FVector& HitPoint) override;;
 
 	void PlayHitReactMontage(FName SectionName);
+	void DirectionalHitReact(const FVector& HitPoint);
 
 private:
 	UPROPERTY(EditDefaultsOnly,Category=Montage)
 	UAnimMontage* HitReactMontage;
+
+	UPROPERTY(EditAnywhere,Category=Sound)
+	USoundBase* HitSound;
+
+	UPROPERTY(EditAnywhere,Category=Particle)
+	UParticleSystem* HitPartiacle;
 
 public:	
 

@@ -2,6 +2,7 @@
 #include "Enemies/Enemy.h"
 
 #include "Components/CapsuleComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 AEnemy::AEnemy()
@@ -44,7 +45,7 @@ void AEnemy::PlayHitReactMontage(FName SectionName)
 	}
 }
 
-void AEnemy::GetHit(const FVector& HitPoint)
+void AEnemy::DirectionalHitReact(const FVector& HitPoint)
 {
 	const FVector ForwardVector = GetActorForwardVector();
 	FVector HitVector = (FVector(HitPoint.X,HitPoint.Y,GetActorLocation().Z)-GetActorLocation()).GetSafeNormal();         //受击向量与向前向量处同一高度并规格化
@@ -64,5 +65,24 @@ void AEnemy::GetHit(const FVector& HitPoint)
 
 	PlayHitReactMontage(SectionName);
 	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + CrossVector * 100.f, 5.f, FColor::Blue, 5.f);
+}
+
+void AEnemy::GetHit_Implementation(const FVector& HitPoint)
+{
+	DirectionalHitReact(HitPoint);
+	if(HitSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			this,
+			HitSound,
+			HitPoint);
+	}
+	if(GetWorld()&&HitPartiacle)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			HitPartiacle,
+			HitPoint);
+	}
 }
 

@@ -30,6 +30,9 @@ protected:
 	UFUNCTION()
 	void OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void CreateFields(const FVector& FieldLocation);     //创建击碎物体的瞬态场
+	
 private:
 	UPROPERTY(VisibleAnywhere,Category="Weapon Properties")
 	class UBoxComponent* WeaponBox;

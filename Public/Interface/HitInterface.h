@@ -17,5 +17,6 @@ class SLASH_API IHitInterface
 	GENERATED_BODY()
 
 public:
-	virtual void GetHit(const FVector& HitPoint) = 0;      //接口
+	UFUNCTION(BlueprintNativeEvent)     //可在蓝图中实现
+	void GetHit(const FVector& HitPoint);      //接口
 };
