@@ -19,11 +19,18 @@ protected:
 	virtual void BeginPlay() override;
 	
 	virtual void GetHit_Implementation(const FVector& HitPoint) override;
-
-private:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
 	class UGeometryCollectionComponent* GeometryCollection;
 
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+	class UCapsuleComponent* Capsule;
+
+private:
+
+	UPROPERTY(EditAnywhere,Category=BreakableActor)
+	TArray<TSubclassOf<class ATreasure>> TreasureClasses;    //需要生成的是蓝图类，不能直接使用Treasure,否则生成的是c++类
+
+	bool Canbroken = true;
 public:	
 
 
