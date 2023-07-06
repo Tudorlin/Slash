@@ -33,22 +33,20 @@ void ABreakableActor::BeginPlay()
 void ABreakableActor::GetHit_Implementation(const FVector& HitPoint)
 {
 	IHitInterface::GetHit_Implementation(HitPoint);
-	if(Canbroken)
+	if(Canbroken) return;
+	Canbroken = true;
+	Capsule->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+	UWorld* World = GetWorld();
+	if(World&&TreasureClasses.Num())
 	{
-		Capsule->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
-		UWorld* World = GetWorld();
-		if(World&&TreasureClasses.Num())
-		{
-			FVector Location = GetActorLocation();
-			int32 Section = FMath::RandRange(0,TreasureClasses.Num()-1);
-			Location.Z +=75.f;
-			World->SpawnActor<ATreasure>(
-				TreasureClasses[Section],
-				Location,
-				GetActorRotation()
-				);
-		}
-		Canbroken = false;
+		FVector Location = GetActorLocation();
+		int32 Section = FMath::RandRange(0,TreasureClasses.Num()-1);
+		Location.Z +=75.f;
+		World->SpawnActor<ATreasure>(
+		TreasureClasses[Section],
+		Location,
+		GetActorRotation()
+		);
 	}
 }
 

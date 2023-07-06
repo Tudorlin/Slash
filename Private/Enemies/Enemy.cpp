@@ -1,7 +1,10 @@
 
 #include "Enemies/Enemy.h"
 
+#include "Component/AttributeComponent.h"
 #include "Components/CapsuleComponent.h"
+#include"Components/WidgetComponent.h"
+#include "HUD/HealthBarComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -15,12 +18,15 @@ AEnemy::AEnemy()
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Visibility,ECR_Ignore);
 
+	AttributeComponent = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attritube Component"));
+	HealthBarWidget = CreateDefaultSubobject<UHealthBarComponent>(TEXT("HealthBar"));
+	HealthBarWidget->SetupAttachment(GetRootComponent());
+
 }
 
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void AEnemy::Tick(float DeltaTime)
@@ -65,6 +71,18 @@ void AEnemy::DirectionalHitReact(const FVector& HitPoint)
 
 	PlayHitReactMontage(SectionName);
 	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + CrossVector * 100.f, 5.f, FColor::Blue, 5.f);
+}
+
+float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	AActor* DamageCauser)
+{
+	if(AttributeComponent&&HealthBarWidget)
+	{
+		AttributeComponent->ReceiveDamage(DamageAmount);                            //接收伤害以及血量百分比写在属性组件中，由蓝图身上的属性组件控制
+		HealthBarWidget->SetHealthPercent(AttributeComponent->GetHealthPercet());    //接收完伤害之后设置百分比
+		
+	}
+	return DamageAmount;
 }
 
 void AEnemy::GetHit_Implementation(const FVector& HitPoint)

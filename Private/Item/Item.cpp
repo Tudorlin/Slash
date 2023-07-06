@@ -2,7 +2,7 @@
 
 
 #include "Item/Item.h"
-
+#include"NiagaraComponent.h"
 #include "Character/SlashCharacter.h"
 #include "Components/SphereComponent.h"
 
@@ -14,6 +14,9 @@ AItem::AItem()
 	RootComponent = ItemMesh;
 	Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
 	Sphere->SetupAttachment(GetRootComponent());
+
+	EmberEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("EmberEffect"));
+	EmberEffect->SetupAttachment(GetRootComponent());
 
 }
 

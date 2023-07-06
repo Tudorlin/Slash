@@ -7,6 +7,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Interface/HitInterface.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 	
 AWeapon::AWeapon()
@@ -67,8 +68,14 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 			HitInterface->Execute_GetHit(BoxHit.GetActor(),BoxHit.ImpactPoint);  //使用BlueprintNativeEvent宏定义的函数后会自动生成的执行函数，需要知道是谁执行，多了一个参数
 		}
 		IgnoreActors.AddUnique(BoxHit.GetActor());
-
 		CreateFields(BoxHit.ImpactPoint);
+
+		UGameplayStatics::ApplyDamage(
+			BoxHit.GetActor(),         //被击中的actor中的takedamage函数会接受伤害
+			Damage,
+			GetInstigator()->GetController(),
+			this,
+			UDamageType::StaticClass());
 	}
 }
 
@@ -78,8 +85,10 @@ void AWeapon::AttachMeshToComponent(USceneComponent* InParent, FName InSocketNam
 	ItemMesh->AttachToComponent(InParent,TransformRules,InSocketName);
 }
 
-void AWeapon::Equip(USceneComponent* InParent, FName InSocketName)
+void AWeapon::Equip(USceneComponent* InParent, FName InSocketName,AActor* NewOwner,APawn* NewInstigator)
 {
+	SetOwner(NewOwner);
+	SetInstigator(NewInstigator);
 	AttachMeshToComponent(InParent, InSocketName);
 	ItemState = EIS_Equipped;
 	if(Sphere)

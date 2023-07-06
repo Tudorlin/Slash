@@ -30,7 +30,7 @@ private:
 	UPROPERTY(EditAnywhere,Category=BreakableActor)
 	TArray<TSubclassOf<class ATreasure>> TreasureClasses;    //需要生成的是蓝图类，不能直接使用Treasure,否则生成的是c++类
 
-	bool Canbroken = true;
+	bool Canbroken = false;
 public:	
 
 
