@@ -19,6 +19,8 @@ public:
 	void ReceiveDamage(float Damage);
 	float GetHealthPercet();
 
+	bool IsAlive();
+
 protected:
 	virtual void BeginPlay() override;
 

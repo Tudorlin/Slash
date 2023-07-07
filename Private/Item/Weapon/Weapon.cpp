@@ -62,6 +62,13 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	);
 	if (BoxHit.GetActor())
 	{
+		UGameplayStatics::ApplyDamage(
+		BoxHit.GetActor(),         //被击中的actor中的takedamage函数会接受伤害
+		Damage,
+		GetInstigator()->GetController(),
+		this,
+		UDamageType::StaticClass());   //先计算伤害再出发GetHit防止敌人死亡仍然能被扣血
+		
 		IHitInterface* HitInterface = Cast<IHitInterface>(BoxHit.GetActor());
 		if (HitInterface)
 		{
@@ -69,13 +76,6 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		}
 		IgnoreActors.AddUnique(BoxHit.GetActor());
 		CreateFields(BoxHit.ImpactPoint);
-
-		UGameplayStatics::ApplyDamage(
-			BoxHit.GetActor(),         //被击中的actor中的takedamage函数会接受伤害
-			Damage,
-			GetInstigator()->GetController(),
-			this,
-			UDamageType::StaticClass());
 	}
 }
 

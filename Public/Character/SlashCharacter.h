@@ -40,7 +40,7 @@ protected:
 	
 
 	UFUNCTION(BlueprintCallable)
-	void AttackEnd();      //可在蓝图中调用的函数来重置角色的攻击状态
+	void AttackmontageEnd();      //可在蓝图中调用的函数来重置角色的攻击状态
 
 	UFUNCTION(BlueprintCallable)
 	void DisArm();

@@ -31,6 +31,10 @@ private:
 	UPROPERTY(EditDefaultsOnly,Category=Montage)
 	UAnimMontage* HitReactMontage;
 
+	UPROPERTY(EditDefaultsOnly,Category=Montage)
+	UAnimMontage* DeathMontage;
+	
+
 	UPROPERTY(EditAnywhere,Category=Sound)
 	USoundBase* HitSound;
 
@@ -46,6 +50,6 @@ private:
 	
 
 
-public:	
-
+public:
+	void Die();
 };

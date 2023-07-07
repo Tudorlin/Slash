@@ -139,7 +139,7 @@ void ASlashCharacter::PlayAttackMontage()
 	if(AttackMontage&&AnimInstance)
 	{
 		AnimInstance->Montage_Play(AttackMontage);
-		int32 Selection = FMath::RandRange(0,1);
+		int32 Selection = FMath::RandRange(0,2);
 		FName SectionName = FName();
 		//随机播放攻击动画:
 		switch (Selection)
@@ -149,6 +149,9 @@ void ASlashCharacter::PlayAttackMontage()
 			break;
 		case 1:
 			SectionName = FName("Attack2");
+			break;
+		case 2:
+			SectionName = FName("Attack3");
 			break;
 		default:
 			break;
@@ -167,7 +170,7 @@ void ASlashCharacter::PlayEquipMontage(const FName SectionName)
 	}
 }
 
-void ASlashCharacter::AttackEnd()
+void ASlashCharacter::AttackmontageEnd()
 {
 	ActionState = EActionState::EAS_Unoccupied;
 }
