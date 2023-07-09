@@ -1,9 +1,11 @@
 
 #include "Enemies/Enemy.h"
 
+#include "AIController.h"
 #include "Component/AttributeComponent.h"
 #include "Components/CapsuleComponent.h"
 #include"Components/WidgetComponent.h"
+#include"GameFramework/CharacterMovementComponent.h"
 #include "HUD/HealthBarComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -22,17 +24,75 @@ AEnemy::AEnemy()
 	HealthBarWidget = CreateDefaultSubobject<UHealthBarComponent>(TEXT("HealthBar"));
 	HealthBarWidget->SetupAttachment(GetRootComponent());
 
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+
 }
 
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	if(HealthBarWidget)
+	{
+		HealthBarWidget->SetVisibility(false);
+	}
+
+	EnemyController = Cast<AAIController>(GetController());  //初始化AI控制器
+	if(EnemyController&&PartolTarget)
+	{
+		FAIMoveRequest MoveRequest;    //用于设置目标半径等属性，这玩意是个结构体
+		MoveRequest.SetGoalActor(PartolTarget);
+		MoveRequest.SetAcceptanceRadius(15.f);
+		FNavPathSharedPtr NavPath;
+		EnemyController->MoveTo(MoveRequest,&NavPath);
+		TArray<FNavPathPoint>& PathPoints = NavPath->GetPathPoints();  //获取网格中的导航点
+		for(auto& Point : PathPoints)
+		{
+			const FVector& Location = Point.Location;
+		}
+	}
 }
 
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if(CombatTarget)
+	{
+		if(!InTargetRange(CombatTarget,CombatRadius))
+		{
+			CombatTarget = nullptr;
+			if(HealthBarWidget)
+			{
+				HealthBarWidget->SetVisibility(false);
+			}
+		}
+	}
+	if(PartolTarget&&EnemyController)
+	{
+		if(InTargetRange(PartolTarget,PartolRadius))
+		{
+			TArray<AActor*> Targets;             //防止在某一个导航点一直巡逻
+			for(AActor* Target : PartolTargets)  
+			{
+				if(Target !=PartolTarget)    //如果当前的导航点不存在于PartolTargets中就添加进去，此数组存储为“有效”导航点
+					Targets.AddUnique(Target);
+			}
+			const int32 TargetNums = Targets.Num();
+			if(TargetNums > 0)           //有导航点被加入数组则执行
+			{
+				const int32 Section = FMath::RandRange(0,TargetNums-1);
+				AActor* TargetPoint = Targets[Section];
+				PartolTarget = TargetPoint;
 
+				FAIMoveRequest MoveRequest;
+				MoveRequest.SetGoalActor(PartolTarget);
+				MoveRequest.SetAcceptanceRadius(15.f);
+				EnemyController->MoveTo(MoveRequest);
+			}
+		}
+	}
 }
 
 void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -51,6 +111,12 @@ void AEnemy::PlayHitReactMontage(FName SectionName)
 	}
 }
 
+bool AEnemy::InTargetRange(AActor* Target, float Radius)
+{
+	const float Distance = (Target->GetActorLocation()-GetActorLocation()).Size();
+	return Distance <= Radius;
+}
+
 void AEnemy::Die()
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
@@ -64,24 +130,31 @@ void AEnemy::Die()
 		{
 		case 0:
 			SectionName = FName("Death1");
+			DeathPoss = EDeathPoss::EDP_Death1;
 			break;
 		case 1:
 			SectionName = FName("Death2");
+			DeathPoss = EDeathPoss::EDP_Death2;
 			break;
 		case 2:
 			SectionName = FName("Death3");
+			DeathPoss = EDeathPoss::EDP_Death3;
 			break;
 		case 3:
 			SectionName = FName("Death4");
+			DeathPoss = EDeathPoss::EDP_Death4;
 			break;
 		case 4:
 			SectionName = FName("Death5");
+			DeathPoss = EDeathPoss::EDP_Death5;
 			break;
 		default:
 			break;
 		}
 		AnimInstance->Montage_JumpToSection(SectionName, DeathMontage);
 	}
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SetLifeSpan(3.f);
 }
 
 void AEnemy::DirectionalHitReact(const FVector& HitPoint)
@@ -115,11 +188,16 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 		HealthBarWidget->SetHealthPercent(AttributeComponent->GetHealthPercet());    //接收完伤害之后设置百分比
 		
 	}
+	CombatTarget = EventInstigator->GetPawn();
 	return DamageAmount;
 }
 
 void AEnemy::GetHit_Implementation(const FVector& HitPoint)
 {
+	if(HealthBarWidget)
+	{
+		HealthBarWidget->SetVisibility(true);
+	}
 	if(AttributeComponent&&AttributeComponent->IsAlive())
 	{
 		DirectionalHitReact(HitPoint);

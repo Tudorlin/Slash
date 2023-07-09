@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Character/CharacterTpes.h"
 #include "Interface/HitInterface.h"
 #include "GameFramework/Character.h"
 #include "Sound/SoundCue.h"
@@ -27,6 +28,9 @@ protected:
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
+	UPROPERTY(BlueprintReadOnly)
+	EDeathPoss DeathPoss = EDeathPoss::EDP_Alive;
+
 private:
 	UPROPERTY(EditDefaultsOnly,Category=Montage)
 	UAnimMontage* HitReactMontage;
@@ -41,14 +45,34 @@ private:
 	UPROPERTY(EditAnywhere,Category=Particle)
 	UParticleSystem* HitPartiacle;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere,meta=(AllowPrivateAccess = "true"))
 	class UAttributeComponent* AttributeComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	class UHealthBarComponent* HealthBarWidget;
 
-	
+	UPROPERTY()
+	AActor* CombatTarget = nullptr;
 
+	UPROPERTY(EditAnywhere)
+	float CombatRadius = 500.f;
+
+	UPROPERTY(EditAnywhere)
+	float PartolRadius = 200.f;
+
+	/**
+	 **导航网格
+	 **/
+	UPROPERTY()
+	class AAIController* EnemyController;
+
+	UPROPERTY(EditInstanceOnly,Category="AI Navigation")
+	AActor* PartolTarget;    //当前的导航点
+
+	UPROPERTY(EditInstanceOnly,Category="AI Navigation")
+	TArray<AActor*> PartolTargets;   //导航网格体中包含的导航点
+
+	bool InTargetRange(AActor* Target,float Radius);
 
 public:
 	void Die();
